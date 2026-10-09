@@ -1,0 +1,28 @@
+# Nokia N9 Aegis Hatasi Cozumu ve Hizli Kurulum Rehberi
+
+## 1. Hatasinin Nedeni:
+Nokia N9 (MeeGo 1.2 Harmattan) isletim sistemi 2011 donemine ait eski bir dpkg surumu kullanir.
+Modern Linux sistemleri .deb paketlerini varsayilan olarak 'xz' sikistirma ile paketler.
+N9'daki Aegis guvenlik sistemi 'xz' formatini taniyamadigi icin:
+  "Aegis rejecting ...: Could not open debian archive"
+hatasi vermektedir. Ayrica /home/user/MyDocs dizini FAT32 (vfat) dosya sistemi oldugu icin dosya izinleri sinirlidir.
+
+## 2. Cozum 1 (En Hizlisi - Dogrudan Kurulum Komutlari):
+Su an zaten root terminalindesiniz (~ #). Hic dpkg ile ugrasmaniza gerek kalmadan asagidaki 4 satiri terminale yapistirarak 2 saniyede kurabilirsiniz:
+
+mkdir -p /opt/MeeX /usr/share/applications /usr/share/icons/hicolor/80x80/apps
+cp /home/user/MyDocs/MeeX/main.qml /opt/MeeX/
+cp /home/user/MyDocs/MeeX/run.py /opt/MeeX/ && chmod +x /opt/MeeX/run.py
+cp /home/user/MyDocs/MeeX/meex.png /usr/share/icons/hicolor/80x80/apps/
+cp /home/user/MyDocs/MeeX/meex.desktop /usr/share/applications/
+
+Veya MeeX klasorundeki hazir betigi calistirin:
+sh /home/user/MyDocs/MeeX/install_n9.sh
+
+## 3. Cozum 2 (Guncellenmis .deb Paketi ile Kurulum):
+Zip icindeki yeni 'meex_1.0.0_armel.deb' ve 'meex_1.0.0_all.deb' paketleri Nokia N9'un destekledigi 'gzip' (-Zgzip) formatiyla yeniden derlendi.
+
+Paketi /tmp dizinine kopyalayip calistirin:
+cp /home/user/MyDocs/meex_1.0.0_armel.deb /tmp/
+cd /tmp
+dpkg -i meex_1.0.0_armel.deb
