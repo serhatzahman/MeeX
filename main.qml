@@ -3,11 +3,13 @@ import com.nokia.meego 1.0
 
 PageStackWindow {
     id: appWindow
+    width: 480
+    height: 854
     initialPage: mainPage
     showToolBar: false
-    showStatusBar: true
+    showStatusBar: false
 
-    property string serverUrl: "http://192.168.1.100:5000/api"
+    property string serverUrl: "http://192.168.8.137:5000/api"
     property bool isLoading: false
 
     // Sailfish OS (Silica) Renk Paleti
@@ -70,35 +72,69 @@ PageStackWindow {
                 }
             }
 
-            // Hızlı Yeni Tweet Butonu
-            Item {
-                width: 70
-                height: 70
+            // Üst Sağ Butonlar (Arama ve Yeni Gönderi)
+            Row {
                 anchors.right: parent.right
-                anchors.rightMargin: 8
+                anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
+                spacing: 8
 
+                // Hızlı Arama Butonu (Görünür Pill Tasarımı)
                 Rectangle {
-                    width: 52
-                    height: 52
-                    radius: 26
+                    width: 76
+                    height: 42
+                    radius: 21
+                    color: "#162434"
+                    border.color: "#38BDF8"
+                    border.width: 1
+
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 6
+
+                        Item {
+                            width: 16; height: 16
+                            anchors.verticalCenter: parent.verticalCenter
+                            Rectangle { width: 11; height: 11; radius: 5; color: "transparent"; border.color: "#38BDF8"; border.width: 2; x: 1; y: 1 }
+                            Rectangle { width: 2; height: 6; radius: 1; color: "#38BDF8"; rotation: -45; transformOrigin: Item.Top; x: 10; y: 10 }
+                        }
+
+                        Text {
+                            text: "Ara"
+                            font.bold: true
+                            font.pixelSize: 16
+                            color: "#38BDF8"
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: openSearch()
+                    }
+                }
+
+                // Hızlı Yeni Tweet Butonu
+                Rectangle {
+                    width: 44
+                    height: 42
+                    radius: 21
                     color: "#182433"
                     border.color: silicaHighlight
                     border.width: 1
-                    anchors.centerIn: parent
 
                     Text {
                         anchors.centerIn: parent
                         text: "+"
-                        font.pixelSize: 32
                         font.bold: true
+                        font.pixelSize: 28
                         color: silicaHighlight
                     }
-                }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: pageStack.push(composePage)
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: pageStack.push(composePage)
+                    }
                 }
             }
         }
@@ -188,89 +224,297 @@ PageStackWindow {
             }
         }
 
-        // Alt Sailfish Gezinme Çubuğu (5 Buton: Akış, Keşfet, Gönder, Profil, Ayarlar)
+                                // ==============================================================
+        // SAILFISH OS (SILICA UI) GEZİNME ÇUBUĞU
+        // Minimalist, İnce Çizgili Vektör İkonlar & Ambiance Vurgusu
+        // ==============================================================
         Rectangle {
             id: bottomNavBar
             anchors.bottom: parent.bottom
             width: parent.width
-            height: 78
-            color: "#0D131C"
-            border.color: "#182230"
+            height: 72
+            color: "#080D14"
+            border.color: "#182432"
             border.width: 1
 
+            property int currentTab: 0
+
             Row {
-                anchors.centerIn: parent
-                spacing: 16
+                anchors.fill: parent
 
-                // 1. Akış
+                // 1. Akış (Sailfish Minimalist Ev / Home İkonu)
                 Item {
-                    width: 68; height: 70
-                    Column {
-                        anchors.centerIn: parent; spacing: 2
-                        Text { text: "↻"; font.pixelSize: 32; color: silicaHighlight; anchors.horizontalCenter: parent.horizontalCenter }
-                        Text { text: "Akış"; font.pixelSize: 12; color: silicaHighlight; anchors.horizontalCenter: parent.horizontalCenter }
+                    width: parent.width / 5
+                    height: parent.height
+
+                    // Sailfish Aktif Sekme Gösterge Çizgisi
+                    Rectangle {
+                        width: 24; height: 2; radius: 1
+                        color: silicaHighlight
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        visible: bottomNavBar.currentTab === 0
                     }
-                    MouseArea { anchors.fill: parent; onClicked: fetchTimeline() }
-                }
 
-                // 2. Keşfet / Arama
-                Item {
-                    width: 68; height: 70
                     Column {
-                        anchors.centerIn: parent; spacing: 4
+                        anchors.centerIn: parent
+                        spacing: 4
+                        opacity: bottomNavBar.currentTab === 0 ? 1.0 : 0.55
+
                         Item {
-                            width: 32; height: 32
+                            width: 24; height: 22
                             anchors.horizontalCenter: parent.horizontalCenter
+
+                            // Çatı (İnce Vektör)
                             Rectangle {
-                                width: 18; height: 18; radius: 9
-                                color: "transparent"
-                                border.color: "#38BDF8"; border.width: 3
-                                anchors.left: parent.left; anchors.top: parent.top; anchors.margins: 2
+                                width: 14; height: 14
+                                rotation: 45
+                                color: bottomNavBar.currentTab === 0 ? silicaHighlight : "#FFFFFF"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                y: 1
                             }
+                            // Gövde
                             Rectangle {
-                                width: 4; height: 12; radius: 2
-                                color: "#38BDF8"
-                                rotation: -45
-                                transformOrigin: Item.Top
-                                x: 17; y: 17
+                                width: 16; height: 11
+                                color: bottomNavBar.currentTab === 0 ? silicaHighlight : "#FFFFFF"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                y: 8
+                            }
+                            // Kapı Boşluğu (Sailfish Negatif Alan)
+                            Rectangle {
+                                width: 6; height: 7
+                                color: "#080D14"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                y: 12
                             }
                         }
-                        Text { text: "Keşfet"; font.pixelSize: 12; color: "#38BDF8"; anchors.horizontalCenter: parent.horizontalCenter }
+
+                        Text {
+                            text: "Akış"
+                            font.bold: bottomNavBar.currentTab === 0
+                            font.pixelSize: 12
+                            color: bottomNavBar.currentTab === 0 ? silicaHighlight : "#8A9BA8"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
                     }
-                    MouseArea { anchors.fill: parent; onClicked: openSearch() }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            bottomNavBar.currentTab = 0;
+                            fetchTimeline();
+                        }
+                    }
                 }
 
-                // 3. Yeni Gönderi
+                // 2. Arama (Sailfish İnce Halka Büyüteç İkonu)
                 Item {
-                    width: 68; height: 70
-                    Column {
-                        anchors.centerIn: parent; spacing: 2
-                        Text { text: "✎"; font.pixelSize: 30; color: silicaTextPrimary; anchors.horizontalCenter: parent.horizontalCenter }
-                        Text { text: "Gönder"; font.pixelSize: 12; color: silicaTextPrimary; anchors.horizontalCenter: parent.horizontalCenter }
+                    width: parent.width / 5
+                    height: parent.height
+
+                    Rectangle {
+                        width: 24; height: 2; radius: 1
+                        color: silicaHighlight
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        visible: bottomNavBar.currentTab === 1
                     }
-                    MouseArea { anchors.fill: parent; onClicked: pageStack.push(composePage) }
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 4
+                        opacity: bottomNavBar.currentTab === 1 ? 1.0 : 0.55
+
+                        Item {
+                            width: 24; height: 22
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            // Büyüteç Halkası
+                            Rectangle {
+                                width: 14; height: 14
+                                radius: 7
+                                color: "transparent"
+                                border.color: bottomNavBar.currentTab === 1 ? silicaHighlight : "#FFFFFF"
+                                border.width: 2
+                                x: 2; y: 1
+                            }
+                            // Sap
+                            Rectangle {
+                                width: 2; height: 7
+                                radius: 1
+                                color: bottomNavBar.currentTab === 1 ? silicaHighlight : "#FFFFFF"
+                                rotation: -45
+                                transformOrigin: Item.Top
+                                x: 13; y: 12
+                            }
+                        }
+
+                        Text {
+                            text: "Arama"
+                            font.bold: bottomNavBar.currentTab === 1
+                            font.pixelSize: 12
+                            color: bottomNavBar.currentTab === 1 ? silicaHighlight : "#8A9BA8"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            bottomNavBar.currentTab = 1;
+                            openSearch();
+                        }
+                    }
                 }
 
-                // 4. Profil
+                // 3. Gönder (Sailfish Ambient Eylem Butonu)
                 Item {
-                    width: 68; height: 70
+                    width: parent.width / 5
+                    height: parent.height
+
                     Column {
-                        anchors.centerIn: parent; spacing: 2
-                        Text { text: "★"; font.pixelSize: 28; color: "#F59E0B"; anchors.horizontalCenter: parent.horizontalCenter }
-                        Text { text: "Profil"; font.pixelSize: 12; color: "#F59E0B"; anchors.horizontalCenter: parent.horizontalCenter }
+                        anchors.centerIn: parent
+                        spacing: 3
+
+                        Rectangle {
+                            width: 36; height: 36; radius: 18
+                            color: "#10252D"
+                            border.color: silicaHighlight
+                            border.width: 1
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "+"
+                                font.bold: true
+                                font.pixelSize: 26
+                                color: silicaHighlight
+                            }
+                        }
+
+                        Text {
+                            text: "Gönder"
+                            font.pixelSize: 12
+                            color: silicaHighlight
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
                     }
-                    MouseArea { anchors.fill: parent; onClicked: openProfile("") }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: pageStack.push(composePage)
+                    }
                 }
 
-                // 5. Ayarlar
+                // 4. Profil (Sailfish Minimalist Kişi Silüeti)
                 Item {
-                    width: 68; height: 70
-                    Column {
-                        anchors.centerIn: parent; spacing: 2
-                        Text { text: "⚙"; font.pixelSize: 28; color: silicaTextSecondary; anchors.horizontalCenter: parent.horizontalCenter }
-                        Text { text: "Ayarlar"; font.pixelSize: 12; color: silicaTextSecondary; anchors.horizontalCenter: parent.horizontalCenter }
+                    width: parent.width / 5
+                    height: parent.height
+
+                    Rectangle {
+                        width: 24; height: 2; radius: 1
+                        color: silicaHighlight
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        visible: bottomNavBar.currentTab === 3
                     }
-                    MouseArea { anchors.fill: parent; onClicked: pageStack.push(settingsPage) }
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 4
+                        opacity: bottomNavBar.currentTab === 3 ? 1.0 : 0.55
+
+                        Item {
+                            width: 24; height: 22
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            // Baş
+                            Rectangle {
+                                width: 8; height: 8
+                                radius: 4
+                                color: bottomNavBar.currentTab === 3 ? silicaHighlight : "#FFFFFF"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                y: 1
+                            }
+                            // Gövde / Omuzlar
+                            Rectangle {
+                                width: 18; height: 7
+                                radius: 3
+                                color: bottomNavBar.currentTab === 3 ? silicaHighlight : "#FFFFFF"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                y: 11
+                            }
+                        }
+
+                        Text {
+                            text: "Profil"
+                            font.bold: bottomNavBar.currentTab === 3
+                            font.pixelSize: 12
+                            color: bottomNavBar.currentTab === 3 ? silicaHighlight : "#8A9BA8"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            bottomNavBar.currentTab = 3;
+                            openProfile("");
+                        }
+                    }
+                }
+
+                // 5. Ayarlar (Sailfish Minimalist Ekolayzır / Slayt Çubukları)
+                Item {
+                    width: parent.width / 5
+                    height: parent.height
+
+                    Rectangle {
+                        width: 24; height: 2; radius: 1
+                        color: silicaHighlight
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        visible: bottomNavBar.currentTab === 4
+                    }
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 4
+                        opacity: bottomNavBar.currentTab === 4 ? 1.0 : 0.55
+
+                        Item {
+                            width: 24; height: 22
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            // 1. Çubuk & Düğme (Üstte)
+                            Rectangle { width: 1; height: 16; color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#8A9BA8"; x: 4; y: 3 }
+                            Rectangle { width: 5; height: 4; radius: 1; color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#FFFFFF"; x: 2; y: 5 }
+
+                            // 2. Çubuk & Düğme (Altta)
+                            Rectangle { width: 1; height: 16; color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#8A9BA8"; x: 11; y: 3 }
+                            Rectangle { width: 5; height: 4; radius: 1; color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#FFFFFF"; x: 9; y: 13 }
+
+                            // 3. Çubuk & Düğme (Ortada)
+                            Rectangle { width: 1; height: 16; color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#8A9BA8"; x: 18; y: 3 }
+                            Rectangle { width: 5; height: 4; radius: 1; color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#FFFFFF"; x: 16; y: 9 }
+                        }
+
+                        Text {
+                            text: "Ayarlar"
+                            font.bold: bottomNavBar.currentTab === 4
+                            font.pixelSize: 12
+                            color: bottomNavBar.currentTab === 4 ? silicaHighlight : "#8A9BA8"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            bottomNavBar.currentTab = 4;
+                            pageStack.push(settingsPage);
+                        }
+                    }
                 }
             }
         }
@@ -280,7 +524,18 @@ PageStackWindow {
             id: busy
             anchors.centerIn: parent
             visible: appWindow.isLoading
-            running: visible
+            running: appWindow.isLoading
+            z: 99
+        }
+
+        Timer {
+            id: loadingSafetyTimer
+            interval: 6000
+            onTriggered: {
+                if (appWindow.isLoading) {
+                    appWindow.isLoading = false;
+                }
+            }
         }
 
         // Boş Akış Bildirimi
@@ -458,7 +713,7 @@ PageStackWindow {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: openTweetDetail(model.id)
+                            onClicked: openTweetDetailWithData(model.id, model.user, model.screen_name, model.text, model.avatar, model.media, model.created_at)
                         }
                     }
 
@@ -481,7 +736,7 @@ PageStackWindow {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: openTweetDetail(model.id)
+                            onClicked: openTweetDetailWithData(model.id, model.user, model.screen_name, model.text, model.avatar, model.media, model.created_at)
                         }
                     }
 
@@ -1037,8 +1292,10 @@ PageStackWindow {
         id: searchPage
         orientationLock: PageOrientation.LockPortrait
 
+        property int activeTab: 0 // 0: Gündemdekiler, 1: Arama
         property bool isSearching: false
-        property string searchStatusText: ""
+        property string searchStatusText: "Aramak için kelime girip 'Ara' butonuna basın."
+        property string trendsStatusText: "Gündem başlıkları yükleniyor..."
 
         Rectangle {
             anchors.fill: parent
@@ -1060,123 +1317,165 @@ PageStackWindow {
             }
 
             Label {
-                text: searchPage.isSearching ? "Arama Sonuçları" : "Keşfet & Gündem"
+                text: "Arama & Keşfet"
                 font.bold: true
                 font.pixelSize: 24
                 color: silicaTextPrimary
                 anchors.centerIn: parent
             }
-
-            Item {
-                width: 90; height: 50
-                anchors.right: parent.right; anchors.rightMargin: 16
-                anchors.verticalCenter: parent.verticalCenter
-                visible: searchPage.isSearching
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "Gündem"
-                    font.pixelSize: 18
-                    color: silicaHighlight
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        searchPage.isSearching = false;
-                        searchField.text = "";
-                    }
-                }
-            }
         }
 
-        // Arama Çubuğu
+        // Arama & Keşfet Sekme Çubuğu (Gündemler / Arama) - Sailfish OS Vektör İkonlu
         Rectangle {
-            id: searchInputBox
+            id: searchTabBar
             anchors.top: searchTopBar.bottom
-            anchors.left: parent.left; anchors.right: parent.right
-            anchors.margins: 14
-            height: 54
-            radius: 27
-            color: silicaCard
-            border.color: silicaHighlight
+            width: parent.width
+            height: 48
+            color: "#0F1620"
+            border.color: "#1A2533"
             border.width: 1
 
             Row {
                 anchors.fill: parent
-                anchors.margins: 8
-                spacing: 8
 
-                TextField {
-                    id: searchField
-                    width: parent.width - 90
-                    height: parent.height
-                    placeholderText: "Kelime, konu veya @hesap..."
-                    font.pixelSize: 20
-
-                    onAccepted: {
-                        searchField.focus = false;
-                        performSearch(searchField.text);
-                    }
-                }
-
+                // 1. Sekme: Gündemler
                 Rectangle {
-                    width: 74
+                    width: parent.width / 2
                     height: parent.height
-                    radius: 20
-                    color: silicaHighlight
-                    opacity: searchBtnArea.pressed ? 0.6 : 1.0
+                    color: searchPage.activeTab === 0 ? "#172330" : "transparent"
 
-                    Text {
+                    Row {
                         anchors.centerIn: parent
-                        text: "Ara"
-                        font.bold: true
-                        font.pixelSize: 18
-                        color: silicaBlack
+                        spacing: 6
+
+                        // Trend Yükseliş Çubukları (Vektör İkon)
+                        Item {
+                            width: 16; height: 16
+                            anchors.verticalCenter: parent.verticalCenter
+                            Rectangle { width: 3; height: 7; radius: 1; color: searchPage.activeTab === 0 ? silicaHighlight : silicaTextSecondary; x: 1; y: 9 }
+                            Rectangle { width: 3; height: 11; radius: 1; color: searchPage.activeTab === 0 ? silicaHighlight : silicaTextSecondary; x: 6; y: 5 }
+                            Rectangle { width: 3; height: 15; radius: 1; color: searchPage.activeTab === 0 ? silicaHighlight : silicaTextSecondary; x: 11; y: 1 }
+                        }
+
+                        Text {
+                            text: "Gündemdekiler"
+                            font.bold: true
+                            font.pixelSize: 16
+                            color: searchPage.activeTab === 0 ? silicaHighlight : silicaTextSecondary
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 3
+                        color: silicaHighlight
+                        visible: searchPage.activeTab === 0
                     }
 
                     MouseArea {
-                        id: searchBtnArea
                         anchors.fill: parent
                         onClicked: {
-                            searchField.focus = false;
-                            performSearch(searchField.text);
+                            searchPage.activeTab = 0;
+                            fetchTrends();
+                        }
+                    }
+                }
+
+                // 2. Sekme: Arama
+                Rectangle {
+                    width: parent.width / 2
+                    height: parent.height
+                    color: searchPage.activeTab === 1 ? "#172330" : "transparent"
+
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 6
+
+                        // Vektörel Büyüteç İkonu (Unicode Değil, %100 Vektör)
+                        Item {
+                            width: 16; height: 16
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Rectangle {
+                                width: 11; height: 11
+                                radius: 5
+                                color: "transparent"
+                                border.color: searchPage.activeTab === 1 ? "#38BDF8" : silicaTextSecondary
+                                border.width: 2
+                                x: 1; y: 1
+                            }
+                            Rectangle {
+                                width: 2; height: 6
+                                radius: 1
+                                color: searchPage.activeTab === 1 ? "#38BDF8" : silicaTextSecondary
+                                rotation: -45
+                                transformOrigin: Item.Top
+                                x: 10; y: 10
+                            }
+                        }
+
+                        Text {
+                            text: "Tweet Ara"
+                            font.bold: true
+                            font.pixelSize: 16
+                            color: searchPage.activeTab === 1 ? "#38BDF8" : silicaTextSecondary
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 3
+                        color: "#38BDF8"
+                        visible: searchPage.activeTab === 1
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            searchPage.activeTab = 1;
                         }
                     }
                 }
             }
         }
 
-        // Gündem Listesi (Arama yapılmamışken gösterilir)
+        // ============================================
+        // GÖRÜNÜM 1: GÜNDEMLER SEKMESİ (Trends)
+        // ============================================
         ListView {
             id: trendsList
-            anchors.top: searchInputBox.bottom
-            anchors.topMargin: 12
+            anchors.top: searchTabBar.bottom
+            anchors.topMargin: 8
             anchors.bottom: parent.bottom
-            anchors.left: parent.left; anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.right: parent.right
             clip: true
-            visible: !searchPage.isSearching
+            visible: searchPage.activeTab === 0
             model: ListModel { id: trendsModel }
 
             header: Item {
                 width: parent.width
-                height: 44
+                height: 40
                 Row {
                     anchors.left: parent.left; anchors.leftMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 8
-                    Rectangle { width: 4; height: 18; radius: 2; color: silicaHighlight }
-                    Text { text: "Bugün Neler Oluyor?"; font.bold: true; font.pixelSize: 19; color: silicaTextPrimary }
+                    Rectangle { width: 4; height: 16; radius: 2; color: silicaHighlight }
+                    Text { text: "Bugün Neler Oluyor?"; font.bold: true; font.pixelSize: 18; color: silicaTextPrimary }
                 }
             }
 
             delegate: Item {
                 width: 480
-                height: 70
+                height: 68
 
                 Rectangle {
                     width: 452
-                    height: 60
+                    height: 58
                     radius: 12
                     anchors.centerIn: parent
                     color: silicaCard
@@ -1185,13 +1484,13 @@ PageStackWindow {
 
                     Row {
                         anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 14
+                        anchors.margins: 10
+                        spacing: 12
 
                         Text {
                             text: (index + 1).toString()
                             font.bold: true
-                            font.pixelSize: 18
+                            font.pixelSize: 17
                             color: silicaHighlight
                             anchors.verticalCenter: parent.verticalCenter
                             width: 24
@@ -1205,7 +1504,7 @@ PageStackWindow {
                             Text {
                                 text: model.name
                                 font.bold: true
-                                font.pixelSize: 19
+                                font.pixelSize: 18
                                 color: "#FFFFFF"
                                 elide: Text.ElideRight
                                 width: parent.width
@@ -1223,6 +1522,7 @@ PageStackWindow {
                         anchors.fill: parent
                         onClicked: {
                             searchField.text = model.name;
+                            searchPage.activeTab = 1;
                             performSearch(model.name);
                         }
                     }
@@ -1231,31 +1531,100 @@ PageStackWindow {
 
             Label {
                 anchors.centerIn: parent
-                text: "Gündem başlıkları yükleniyor..."
+                text: searchPage.trendsStatusText
                 font.pixelSize: 18
                 color: silicaTextSecondary
                 visible: trendsModel.count === 0 && !appWindow.isLoading
             }
         }
 
-        // Arama Sonuçları Listesi (Arama yapıldığında gösterilir)
-        ListView {
-            id: searchResultsList
-            anchors.top: searchInputBox.bottom
-            anchors.topMargin: 10
+        // ============================================
+        // GÖRÜNÜM 2: ARAMA SEKMESİ (Search)
+        // ============================================
+        Item {
+            id: searchViewContainer
+            anchors.top: searchTabBar.bottom
             anchors.bottom: parent.bottom
-            anchors.left: parent.left; anchors.right: parent.right
-            clip: true
-            visible: searchPage.isSearching
-            model: ListModel { id: searchResultsModel }
-            delegate: tweetDelegateComponent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            visible: searchPage.activeTab === 1
 
-            Label {
-                anchors.centerIn: parent
-                text: searchPage.searchStatusText
-                font.pixelSize: 18
-                color: silicaTextSecondary
-                visible: searchResultsModel.count === 0
+            // Arama Çubuğu
+            Rectangle {
+                id: searchInputBox
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                anchors.left: parent.left; anchors.right: parent.right
+                anchors.margins: 14
+                height: 54
+                radius: 27
+                color: silicaCard
+                border.color: "#38BDF8"
+                border.width: 1
+
+                Row {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    spacing: 8
+
+                    TextField {
+                        id: searchField
+                        width: parent.width - 90
+                        height: parent.height
+                        placeholderText: "Kelime, konu veya @hesap..."
+                        font.pixelSize: 20
+
+                        onAccepted: {
+                            searchField.focus = false;
+                            performSearch(searchField.text);
+                        }
+                    }
+
+                    Rectangle {
+                        width: 74
+                        height: parent.height
+                        radius: 20
+                        color: "#38BDF8"
+                        opacity: searchBtnArea.pressed ? 0.6 : 1.0
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "Ara"
+                            font.bold: true
+                            font.pixelSize: 18
+                            color: silicaBlack
+                        }
+
+                        MouseArea {
+                            id: searchBtnArea
+                            anchors.fill: parent
+                            onClicked: {
+                                searchField.focus = false;
+                                performSearch(searchField.text);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Arama Sonuçları Listesi
+            ListView {
+                id: searchResultsList
+                anchors.top: searchInputBox.bottom
+                anchors.topMargin: 10
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left; anchors.right: parent.right
+                clip: true
+                model: ListModel { id: searchResultsModel }
+                delegate: tweetDelegateComponent
+
+                Label {
+                    anchors.centerIn: parent
+                    text: searchPage.searchStatusText
+                    font.pixelSize: 18
+                    color: silicaTextSecondary
+                    visible: searchResultsModel.count === 0
+                }
             }
         }
     }
@@ -1296,97 +1665,102 @@ PageStackWindow {
             }
         }
 
-        ListView {
-            id: repliesList
+        Flickable {
+            id: detailFlickable
             anchors.top: detailTopBar.bottom
             anchors.bottom: parent.bottom
-            anchors.left: parent.left; anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.right: parent.right
+            contentHeight: detailColumn.height + 60
             clip: true
-            model: ListModel { id: repliesModel }
 
-            header: Item {
+            Column {
+                id: detailColumn
                 width: parent.width
-                height: mainDetailContent.height + 20
+                spacing: 14
 
-                Column {
-                    id: mainDetailContent
-                    width: parent.width
-                    spacing: 12
+                // Ana Tweet Kartı
+                Rectangle {
+                    width: parent.width - 24
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    radius: 16
+                    color: silicaCard
+                    border.color: silicaHighlight
+                    border.width: 1
+                    height: mainDetailCol.height + 28
 
-                    // Ana Tweet Kartı
-                    Rectangle {
-                        width: parent.width - 24
+                    Column {
+                        id: mainDetailCol
+                        width: parent.width - 32
                         anchors.horizontalCenter: parent.horizontalCenter
-                        radius: 16
-                        color: silicaCard
-                        border.color: silicaHighlight
-                        border.width: 1
-                        height: mainDetailCol.height + 28
+                        anchors.top: parent.top
+                        anchors.topMargin: 16
+                        spacing: 12
 
-                        Column {
-                            id: mainDetailCol
-                            anchors.left: parent.left; anchors.right: parent.right
-                            anchors.top: parent.top; anchors.margins: 16
+                        Row {
                             spacing: 12
-
-                            Row {
-                                spacing: 12
-                                Rectangle {
-                                    width: 60; height: 60; radius: 30
-                                    color: "#223142"; clip: true
-                                    Image { id: detailAvatar; anchors.fill: parent; fillMode: Image.PreserveAspectCrop }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter; spacing: 4
-                                    Label { id: detailUser; font.bold: true; font.pixelSize: 24; color: silicaTextPrimary }
-                                    Label { id: detailScreenName; font.pixelSize: 18; color: silicaTextSecondary }
-                                }
-                            }
-
-                            Label {
-                                id: detailText
-                                width: parent.width
-                                wrapMode: Text.Wrap
-                                font.pixelSize: 23
-                                color: "#FFFFFF"
-                            }
-
                             Rectangle {
-                                id: detailMediaBox
-                                width: parent.width
-                                height: 220
-                                radius: 12
-                                color: "#0B1118"
-                                clip: true
-                                visible: false
-                                Image { id: detailMediaImg; anchors.fill: parent; fillMode: Image.PreserveAspectCrop }
+                                width: 60; height: 60; radius: 30
+                                color: "#223142"; clip: true
+                                Image { id: detailAvatar; anchors.fill: parent; fillMode: Image.PreserveAspectCrop }
                             }
-
-                            Label {
-                                id: detailDate
-                                font.pixelSize: 16
-                                color: "#5C6E7E"
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter; spacing: 4
+                                Label { id: detailUser; font.bold: true; font.pixelSize: 24; color: silicaTextPrimary }
+                                Label { id: detailScreenName; font.pixelSize: 18; color: silicaTextSecondary }
                             }
                         }
-                    }
 
-                    // Yanıtlar Başlığı
-                    Rectangle {
-                        width: parent.width
-                        height: 40
-                        color: "#0F1620"
-                        Row {
-                            anchors.left: parent.left; anchors.leftMargin: 20
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 8
-                            Rectangle { width: 4; height: 16; radius: 2; color: silicaHighlight }
-                            Text { text: "Yanıtlar"; font.bold: true; font.pixelSize: 18; color: silicaTextPrimary }
+                        Text {
+                            id: detailText
+                            width: parent.width
+                            wrapMode: Text.Wrap
+                            font.pixelSize: 22
+                            color: "#FFFFFF"
+                        }
+
+                        Rectangle {
+                            id: detailMediaBox
+                            width: parent.width
+                            height: detailMediaBox.visible ? 220 : 0
+                            radius: 12
+                            color: "#0B1118"
+                            clip: true
+                            visible: false
+                            Image { id: detailMediaImg; anchors.fill: parent; fillMode: Image.PreserveAspectCrop }
+                        }
+
+                        Label {
+                            id: detailDate
+                            font.pixelSize: 16
+                            color: "#5C6E7E"
                         }
                     }
                 }
-            }
 
-            delegate: tweetDelegateComponent
+                // Yanıtlar Başlığı
+                Rectangle {
+                    width: parent.width
+                    height: 40
+                    color: "#0F1620"
+                    visible: repliesModel.count > 0
+                    Row {
+                        anchors.left: parent.left; anchors.leftMargin: 20
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 8
+                        Rectangle { width: 4; height: 16; radius: 2; color: silicaHighlight }
+                        Text { text: "Yanıtlar (" + repliesModel.count + ")"; font.bold: true; font.pixelSize: 18; color: silicaTextPrimary }
+                    }
+                }
+
+                // Yanıtlar Listesi (Repeater)
+                Repeater {
+                    model: ListModel { id: repliesModel }
+                    delegate: tweetDelegateComponent
+                }
+
+                Item { width: parent.width; height: 20 }
+            }
         }
     }
 
@@ -1621,11 +1995,13 @@ PageStackWindow {
     function fetchTimeline() {
         if (appWindow.isLoading) return;
         appWindow.isLoading = true;
+        if (loadingSafetyTimer) loadingSafetyTimer.restart();
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 appWindow.isLoading = false;
+                if (loadingSafetyTimer) loadingSafetyTimer.stop();
                 if (xhr.status === 200) {
                     try {
                         var res = JSON.parse(xhr.responseText);
@@ -1712,7 +2088,7 @@ PageStackWindow {
     }
 
     function openSearch() {
-        searchPage.isSearching = false;
+        searchPage.activeTab = 1;
         pageStack.push(searchPage);
         fetchTrends();
     }
@@ -1743,7 +2119,7 @@ PageStackWindow {
 
     function performSearch(query) {
         if (!query || query.trim().length === 0) return;
-        searchPage.isSearching = true;
+        searchPage.activeTab = 1;
         searchPage.searchStatusText = "Aranıyor...";
         searchResultsModel.clear();
         appWindow.isLoading = true;
@@ -1790,40 +2166,58 @@ PageStackWindow {
         xhr.send();
     }
 
-    function openTweetDetail(tweetId) {
-        tweetDetailPage.targetTweetId = tweetId;
+    function openTweetDetailWithData(tweetId, user, screenName, text, avatar, media, createdAt) {
+        tweetDetailPage.targetTweetId = String(tweetId || "");
+        detailUser.text = String(user || "");
+        detailScreenName.text = String(screenName || "");
+        detailText.text = String(text || "");
+        detailDate.text = String(createdAt || "");
+        if (avatar && avatar !== "") detailAvatar.source = avatar;
+        if (media && media !== "") {
+            detailMediaImg.source = media;
+            detailMediaBox.visible = true;
+        } else {
+            detailMediaBox.visible = false;
+        }
+        repliesModel.clear();
         pageStack.push(tweetDetailPage);
 
+        // Arka planda yanıtları ve güncel verileri çek
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 try {
                     var res = JSON.parse(xhr.responseText);
-                    var t = res.data.tweet;
-                    detailUser.text = t.user;
-                    detailScreenName.text = t.screen_name;
-                    detailText.text = t.text;
-                    detailDate.text = t.created_at;
-                    if (t.avatar) detailAvatar.source = t.avatar;
-                    if (t.media && t.media !== "") {
-                        detailMediaImg.source = t.media;
-                        detailMediaBox.visible = true;
-                    } else {
-                        detailMediaBox.visible = false;
-                    }
-
                     repliesModel.clear();
                     var rList = res.data.replies || [];
                     for (var i = 0; i < rList.length; i++) {
-                        repliesModel.append(rList[i]);
+                        var item = rList[i];
+                        repliesModel.append({
+                            "id": String(item.id || ""),
+                            "user": String(item.user || ""),
+                            "screen_name": String(item.screen_name || ""),
+                            "avatar": String(item.avatar || ""),
+                            "text": String(item.text || ""),
+                            "media": String(item.media || ""),
+                            "likes": parseInt(item.likes || 0),
+                            "retweets": parseInt(item.retweets || 0),
+                            "favorited": Boolean(item.favorited),
+                            "retweeted": Boolean(item.retweeted),
+                            "bookmarked": Boolean(item.bookmarked),
+                            "created_at": String(item.created_at || "")
+                        });
                     }
                 } catch (e) {
-                    console.log("Tweet detay parse hatası: " + e);
+                    console.log("Yanıt parse hatası: " + e);
                 }
             }
         };
         xhr.open("GET", serverUrl + "/tweet_detail?id=" + encodeURIComponent(tweetId));
         xhr.send();
+    }
+
+    function openTweetDetail(tweetId) {
+        openTweetDetailWithData(tweetId, "", "", "Yükleniyor...", "", "", "");
     }
 
     function getDatabase() {

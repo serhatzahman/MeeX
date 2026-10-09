@@ -439,21 +439,30 @@ def search_tweets():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 async def _async_get_trends():
-    try:
-        trends = await client.get_trends()
-        result = []
-        if trends:
-            for tr in trends:
-                name = getattr(tr, 'name', '') or str(tr)
-                count = getattr(tr, 'tweets_count', '') or getattr(tr, 'tweet_count', '')
-                result.append({
-                    "name": clean_text_for_n9(name),
-                    "count": str(count) if count else ""
-                })
-        return result
-    except Exception as e:
-        logging.warning(f"Gündem çekme hatası: {e}")
-        return []
+    trends = []
+    for cat in ['trending', 'news', 'sports', 'entertainment']:
+        try:
+            trends = await client.get_trends(cat)
+            if trends:
+                logging.info(f"Gündem çekildi ({cat}): {len(trends)} başlık.")
+                break
+        except Exception as e:
+            logging.warning(f"Gündem çekme denemesi ({cat}) başarısız: {e}")
+
+    result = []
+    if trends:
+        for tr in trends:
+            name = getattr(tr, 'name', '') or str(tr)
+            count = getattr(tr, 'tweets_count', '') or getattr(tr, 'tweet_count', '')
+            result.append({
+                "name": clean_text_for_n9(name),
+                "count": str(count) if count else ""
+            })
+    if not result:
+        logging.info("Canlı gündem bulunamadı, genel başlıklar sunuluyor.")
+        for fb in ["Gündem", "Türkiye", "Teknoloji", "Futbol", "Müzik", "Sinema", "Haberler"]:
+            result.append({"name": fb, "count": "Trend"})
+    return result
 
 @app.route('/api/trends', methods=['GET'])
 def get_trends():
